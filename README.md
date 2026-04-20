@@ -1,51 +1,45 @@
 # Sovereign Government Gateway (VerifySurvey)
 
-**Sovereign Government Gateway** - Decentralized Civic Identity & Public Consultation Hub powered by Stellar.
+**Sovereign Government Gateway** is a decentralized civic infrastructure built on the **Stellar Network**. It empowers citizens with secure, blockchain-anchored identities while providing government authorities a privacy-preserving platform for high-integrity public consultations and referendums.
 
-## Project Description
+---
 
-The Sovereign Government Gateway is a blockchain-based platform designed to transform how citizens interact with public services. Built on the **Stellar network** using **Soroban smart contracts**, it provides a secure, privacy-preserving infrastructure for anchoring government-issued identities and conducting high-integrity public consultations.
+## 📖 Explanation (Architecture & Design)
 
-Unlike traditional systems, the Gateway ensures that every interaction is conducted by a verified unique human (Sovereign Citizen) without ever storing sensitive personal documents in plaintext.
+The system is designed as a "Privacy-First Civic Portal." It leverages the **Soroban Smart Contract** environment to create a trustless relationship between citizens and the state.
 
-## Key Features
+### Core Philosophy
+- **Identity Anchoring:** Unlike traditional databases, we don't store your ID documents. We store a cryptographic "commitment" (SHA-256 hash). This allows you to prove your identity without exposing PII (Personally Identifiable Information).
+- **Verified Humanity:** Citizens must be verified by a Government Authority (Admin) on-chain before participating in official referendums, preventing bot manipulation and fraud.
+- **Data Sovereignty:** All consultation responses are encrypted locally (AES-256) before submission. Only a hash of the encrypted data is recorded on the blockchain.
 
-### 1. **Sovereign Citizen Registration**
-- **Blockchain Anchoring:** Citizens anchor a cryptographic hash of their Government ID (Legal Name + ID Number) to the Stellar blockchain.
-- **Privacy-First:** The raw ID data never leaves the citizen's device. Only a one-way fingerprint (SHA-256) is recorded on-chain.
-- **Verification Tiers:** Profiles are marked as "Verified" only after a Government Authority (Contract Admin) validates the anchored hash.
+### Technical Layers
+1.  **Identity Layer:** Uses Soroban persistent storage to maintain `CitizenProfile` objects (ID Hash, Verification Status, Civic XP).
+2.  **Engagement Layer:** Tracks "Civic XP" (Reputation). Active participation in consultations builds a citizen's reputation, which can be used to gate high-stakes referendums.
+3.  **Security Layer:** Integrated with **Freighter Wallet** for transaction signing and **AES-256** for client-side encryption.
 
-### 2. **Digital Citizen ID Card**
-- A secure dashboard displaying the citizen's decentralized identity status.
-- **Reputation (XP):** Citizens earn reputation points for active participation in public consultations, building their "Civic Engagement" score.
+---
 
-### 3. **Public Consultations & Referendums**
-- Organizations and Government branches can host official surveys and referendums.
-- **Access Control:** Consultations can require a minimum reputation score, ensuring high-quality feedback from experienced citizens.
-- **Anti-Fraud:** The smart contract prevents double-voting and ensures only verified citizens can participate.
+## 🛠️ Setup (Installation & Configuration)
 
-### 4. **Privacy-Preserving Referendums**
-- All consultation responses are encrypted using **AES-256** client-side before submission.
-- Only the cryptographic commitment (hash) of the encrypted payload is stored on the ledger.
+### Prerequisites
+- **Rust & Cargo:** [Install Rust](https://rustup.rs/)
+- **Node.js & npm:** [Install Node.js](https://nodejs.org/)
+- **Stellar CLI:** `cargo install --locked stellar-cli`
+- **Freighter Wallet:** Install the [Freighter browser extension](https://www.freighter.app/) and switch to **Testnet**.
 
-## Technical Architecture
-
-- **Identity Layer:** Soroban persistent storage stores `CitizenProfile` (ID Hash, Verification Status, Reputation).
-- **Service Layer:** Soroban instance storage manages `SurveyInfo` and consultation metadata.
-- **Transaction Layer:** Stellar network provides the immutable, timestamped record of all civic activities.
-
-## Getting Started
-
-### Smart Contract (Gateway Logic)
+### 1. Smart Contract Setup
+Navigate to the contract directory to build and test the gateway logic:
 ```bash
 cd contracts/survey
-cargo test # Run full civic lifecycle tests
-stellar contract build # Build the WASM gateway
+# Run the civic lifecycle tests
+cargo test
+# Build the WASM binary
+stellar contract build
 ```
-### ID Smart Contract
-CDX7DN25SBNLR4JPP7WFRQPNEVFN3A3HLXNV6JFDDL47XMKTZ5PERQXK
 
-### Frontend (Portal UI)
+### 2. Frontend Setup
+Install dependencies and launch the citizen portal:
 ```bash
 cd frontend
 npm install
@@ -54,4 +48,30 @@ npm run dev
 
 ---
 
-**Sovereign Government Gateway** - Empowering Citizens through Blockchain Transparency.
+## 🚀 Usage (How to Use)
+
+### 1. Citizen Registration
+- Open the portal at `http://localhost:5173`.
+- Click **"Authenticate with Freighter"** to connect your wallet.
+- Enter your Legal Name and Government ID Number.
+- Click **"Anchor Identity"**. The app will hash your data locally and anchor it to Stellar.
+
+### 2. Digital ID Dashboard
+- Once registered, you will see your **Sovereign Citizen ID Card**.
+- Check your **Verification Status**. (In Simulation Mode, this is pre-verified; in Production, an Admin must call `verify_citizen`).
+- View your **Civic XP** (Engagement Score).
+
+### 3. Participating in Consultations
+- Browse the available **Civic Consultations** (e.g., Urban Reforestation, Data Privacy Act).
+- Answer the questions. Your responses are encrypted in the browser.
+- Click **"Sign & Submit to Gateway"**. This submits a transaction to Soroban that records your encrypted response hash and rewards you with **Civic XP**.
+
+### 4. Simulation Mode
+- Use the **"Simulation Mode"** toggle in the header to walkthrough the entire UI flow without requiring a live contract deployment or Testnet XLM.
+
+---
+
+### ID Contract
+CDX7DN25SBNLR4JPP7WFRQPNEVFN3A3HLXNV6JFDDL47XMKTZ5PERQXK
+
+**Sovereign Government Gateway** - Empowering the individual through blockchain transparency and cryptographic privacy.
