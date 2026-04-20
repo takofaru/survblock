@@ -1,10 +1,10 @@
-# Stellar VerifySurvey DApp
+# surblock
 
-**Stellar VerifySurvey DApp** - Secure, Private, and Verified Human Feedback.
+**survblock** - Secure, Private, and Verified Human Feedback.
 
 ## Project Description
 
-Stellar VerifySurvey is a decentralized survey application built on the **Stellar** blockchain using **Soroban smart contracts**. It solves the dual challenge of ensuring that every respondent is a "real person" (Proof of Humanity) while maintaining 100% data privacy for the user. 
+surblock is a decentralized survey application built on the **Stellar** blockchain using **Soroban smart contracts**. It solves the dual challenge of ensuring that every respondent is a "real person" (Proof of Humanity) while maintaining 100% data privacy for the user. 
 
 By requiring a Government ID verification step (simulated) before access, the application ensures high-integrity survey results for organizations, while utilizing client-side AES encryption so that sensitive personal data never touches the blockchain or any server in plaintext.
 
@@ -70,4 +70,4 @@ npm run dev
 
 ---
 
-**Stellar VerifySurvey DApp** - Powering High-Integrity Research on the Blockchain.
+**survblock** - Powering High-Integrity Research on the Blockchain.
