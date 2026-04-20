@@ -3,26 +3,27 @@ import { isConnected, getAddress, setAllowed, getNetworkDetails } from '@stellar
 import VerificationView from './VerificationView';
 import DashboardView from './DashboardView';
 import SurveyView from './SurveyView';
+import { getCitizen } from './contract';
 import './App.css';
 
-const MOCK_SURVEYS = [
+const MOCK_CONSULTATIONS = [
   { 
-    id: 1, 
-    title: "Eco-Product Feedback", 
-    description: "Help us refine our sustainable product line with verified real user feedback.",
-    questions: ["Which eco-friendly feature is most important to you?", "How likely are you to recommend our products?"]
+    id: 101, 
+    title: "Urban Reforestation Initiative", 
+    description: "Proposed plan to plant 5,000 native trees in the metropolitan district by 2027.",
+    questions: ["Should the city prioritize public parks or roadside greening?", "Would you volunteer for weekend planting events?"]
   },
   { 
-    id: 2, 
-    title: "Governance Proposal #14", 
-    description: "Official vote for the decentralized protocol treasury allocation.",
-    questions: ["Should we allocate 10% of fees to the developer fund?", "Which project should receive the next ecosystem grant?"]
+    id: 102, 
+    title: "Sovereign Data Privacy Act", 
+    description: "Public referendum on the proposed 2026 digital identity protection bill.",
+    questions: ["Do you support stricter penalties for unauthorized PII handling?", "Should local data storage be mandatory for public services?"]
   },
   { 
-    id: 3, 
-    title: "Digital Nomad Lifestyle", 
-    description: "A research survey on remote work trends for verified humans only.",
-    questions: ["How many countries have you worked from in the last 12 months?", "What is your biggest challenge while working remotely?"]
+    id: 103, 
+    title: "Public Transit Optimization", 
+    description: "Feedback on the proposed integration of autonomous shuttle routes.",
+    questions: ["How often do you use the 'Express' shuttle lines?", "Which district requires better late-night coverage?"]
   }
 ];
 
@@ -30,53 +31,51 @@ type AppState = 'verification' | 'dashboard' | 'survey';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('verification');
-  const [issuerSignature, setIssuerSignature] = useState<string | null>(null);
+  const [citizenIdHash, setCitizenIdHash] = useState<string | null>(null);
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
   const [userAddress, setUserAddress] = useState<string | null>(null);
-  const [walletError, setWalletError] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
-  const [isSimulation, setIsSimulation] = useState<boolean>(true); // Default to simulation for UI walkthrough
+  const [isSimulation, setIsSimulation] = useState<boolean>(true);
+  const [reputation, setReputation] = useState<number>(0);
 
   const checkConnection = async (prompt: boolean = false) => {
     try {
       const connected = await isConnected();
       if (connected && connected.isConnected) {
-        if (prompt) {
-          await setAllowed();
-        }
+        if (prompt) await setAllowed();
         
         const addressObj = await getAddress();
         if (addressObj && addressObj.address) {
           setUserAddress(addressObj.address);
-          setWalletError(null);
           
           const netDetails = await getNetworkDetails();
           setNetwork(netDetails.network);
           if (netDetails.network !== "TESTNET") {
-            setWalletError("Freighter is not set to TESTNET. Please switch networks.");
+            console.warn("Stellar network must be set to TESTNET.");
           }
-        } else {
-          setWalletError("Account not found. Ensure your wallet is unlocked.");
+
+          // Fetch real profile if not in simulation
+          if (!isSimulation) {
+            const profile = await getCitizen(addressObj.address);
+            if (profile) {
+              setCitizenIdHash(profile.id_hash);
+              setReputation(profile.reputation);
+              setAppState('dashboard');
+            }
+          }
         }
-      } else {
-        setWalletError("Freighter extension not found.");
       }
     } catch (err: any) {
-      console.error(err);
-      setWalletError(`Failed to connect: ${err.message || 'Unknown error'}`);
+      console.error("Wallet connection error:", err.message);
     }
   };
 
   useEffect(() => {
     checkConnection(false);
-  }, []);
+  }, [isSimulation]);
 
-  const handleVerify = (signature: string) => {
-    if (!userAddress && !isSimulation) {
-      alert("Please connect your Freighter wallet first.");
-      return;
-    }
-    setIssuerSignature(signature);
+  const handleRegister = (idHash: string) => {
+    setCitizenIdHash(idHash);
     setAppState('dashboard');
   };
 
@@ -85,86 +84,83 @@ function App() {
     setAppState('survey');
   };
 
-  const selectedSurvey = MOCK_SURVEYS.find(s => s.id === selectedSurveyId);
+  const selectedSurvey = MOCK_CONSULTATIONS.find(s => s.id === selectedSurveyId);
 
   return (
-    <div className="App" style={{ minHeight: '100vh', padding: '20px', background: '#f8f9fa' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div className="App" style={{ minHeight: '100vh', padding: '20px', background: '#f0f2f5' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <header style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h1 style={{ margin: '0', color: '#333' }}>Stellar VerifySurvey</h1>
-          <p style={{ color: '#666' }}>Secure, Private, and Verified Human Feedback</p>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginBottom: '10px' }}>
+             <span style={{ fontSize: '32px' }}>🏛️</span>
+             <h1 style={{ margin: '0', color: '#1a237e', fontSize: '28px', letterSpacing: '-0.5px' }}>Sovereign Government Gateway</h1>
+          </div>
+          <p style={{ color: '#546e7a', fontSize: '15px' }}>Public Service Portal & Civic Consultation Hub</p>
           
           <div style={{ marginTop: '20px' }}>
             <div style={{ marginBottom: '15px' }}>
-              <label style={{ fontSize: '12px', color: '#666', cursor: 'pointer' }}>
+              <label style={{ fontSize: '11px', color: '#78909c', cursor: 'pointer', background: '#fff', padding: '6px 12px', borderRadius: '20px', border: '1px solid #cfd8dc' }}>
                 <input 
                   type="checkbox" 
                   checked={isSimulation} 
                   onChange={() => setIsSimulation(!isSimulation)} 
-                  style={{ marginRight: '5px' }}
+                  style={{ marginRight: '8px' }}
                 />
-                Enable Simulation Mode (No Live Contract)
+                Simulation Mode
               </label>
             </div>
 
             {userAddress ? (
-              <div style={{ display: 'inline-block', padding: '12px 24px', background: '#e9ecef', borderRadius: '8px', fontSize: '14px', border: '1px solid #ddd' }}>
-                <div><b>Address:</b> {userAddress.slice(0, 8)}...{userAddress.slice(-6)}</div>
-                <div style={{ marginTop: '5px', color: network === "TESTNET" ? "#28a745" : "#dc3545" }}>
-                  <b>Network:</b> {network || "Unknown"}
-                </div>
-                {issuerSignature && (
-                  <div style={{ marginTop: '5px', color: '#28a745' }}>✓ Verified Human</div>
-                )}
-                <button 
-                  onClick={() => checkConnection(true)}
-                  style={{ marginTop: '10px', fontSize: '12px', background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }}
-                >
-                  Refresh Connection
-                </button>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', padding: '10px 20px', background: '#fff', borderRadius: '10px', fontSize: '13px', border: '1px solid #e0e0e0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                <div style={{ width: '8px', height: '8px', background: network === "TESTNET" ? "#4caf50" : "#f44336", borderRadius: '50%' }}></div>
+                <span style={{ color: '#455a64' }}><b>{network}:</b> {userAddress.slice(0, 6)}...{userAddress.slice(-4)}</span>
               </div>
             ) : (
               <button 
                 onClick={() => checkConnection(true)}
-                style={{ padding: '12px 24px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                style={{ padding: '12px 24px', background: '#1a237e', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold' }}
               >
-                Connect Freighter Wallet
+                Authenticate with Freighter
               </button>
-            )}
-            
-            {walletError && !isSimulation && (
-              <div style={{ color: '#dc3545', fontSize: '14px', marginTop: '15px', padding: '10px', background: '#fff5f5', borderRadius: '4px', border: '1px solid #ffc9c9' }}>
-                {walletError} <br/>
-                <a href="https://laboratory.stellar.org/#account-creator?network=testnet" target="_blank" rel="noreferrer" style={{ color: '#007bff', textDecoration: 'underline' }}>Fund your account here</a>
-              </div>
             )}
           </div>
         </header>
 
         <main>
           {appState === 'verification' && (
-            <VerificationView onVerify={handleVerify} />
+            <VerificationView onVerify={handleRegister} isSimulation={isSimulation} />
           )}
 
-          {appState === 'dashboard' && (
-            <DashboardView surveys={MOCK_SURVEYS} onSelect={handleSelectSurvey} />
+          {appState === 'dashboard' && citizenIdHash && (
+            <DashboardView 
+              surveys={MOCK_CONSULTATIONS} 
+              citizen={{
+                address: userAddress || '...',
+                idHash: citizenIdHash,
+                isVerified: true, // For walkthrough purposes
+                reputation: reputation
+              }}
+              onSelect={handleSelectSurvey} 
+            />
           )}
 
-          {appState === 'survey' && selectedSurvey && issuerSignature && (
+          {appState === 'survey' && selectedSurvey && citizenIdHash && (
             <SurveyView 
               surveyId={selectedSurvey.id}
               title={selectedSurvey.title}
               questions={selectedSurvey.questions}
-              issuerSignature={issuerSignature}
+              issuerSignature={citizenIdHash} // Using the anchored hash as the identity proof
               isSimulation={isSimulation}
-              onComplete={() => setAppState('dashboard')}
+              onComplete={() => {
+                setReputation(prev => prev + 1);
+                setAppState('dashboard');
+              }}
               onCancel={() => setAppState('dashboard')}
             />
           )}
         </main>
 
-        <footer style={{ marginTop: '60px', textAlign: 'center', fontSize: '12px', color: '#999', borderTop: '1px solid #ddd', padding: '20px' }}>
-          Powered by Soroban. Simulation Mode is {isSimulation ? 'ON' : 'OFF'}.
+        <footer style={{ marginTop: '60px', textAlign: 'center', fontSize: '11px', color: '#90a4ae', borderTop: '1px solid #e0e0e0', padding: '30px' }}>
+          <strong>Legal Disclaimer:</strong> All data is secured by the Stellar Blockchain. Personal documents are hashed locally and never stored in plaintext on-chain or off-chain.
         </footer>
       </div>
     </div>

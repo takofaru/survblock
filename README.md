@@ -1,73 +1,55 @@
-# Stellar VerifySurvey DApp
+# Sovereign Government Gateway (VerifySurvey)
 
-**Stellar VerifySurvey DApp** - Secure, Private, and Verified Human Feedback.
+**Sovereign Government Gateway** - Decentralized Civic Identity & Public Consultation Hub powered by Stellar.
 
 ## Project Description
 
-Stellar VerifySurvey is a decentralized survey application built on the **Stellar** blockchain using **Soroban smart contracts**. It solves the dual challenge of ensuring that every respondent is a "real person" (Proof of Humanity) while maintaining 100% data privacy for the user. 
+The Sovereign Government Gateway is a blockchain-based platform designed to transform how citizens interact with public services. Built on the **Stellar network** using **Soroban smart contracts**, it provides a secure, privacy-preserving infrastructure for anchoring government-issued identities and conducting high-integrity public consultations.
 
-By requiring a Government ID verification step (simulated) before access, the application ensures high-integrity survey results for organizations, while utilizing client-side AES encryption so that sensitive personal data never touches the blockchain or any server in plaintext.
+Unlike traditional systems, the Gateway ensures that every interaction is conducted by a verified unique human (Sovereign Citizen) without ever storing sensitive personal documents in plaintext.
 
 ## Key Features
 
-### 1. **Government ID Identity Verification**
-- Users must complete a "Proof of Humanity" step using a Government ID.
-- Generates a cryptographic signature from a trusted issuer.
-- Only verified real people can access and submit surveys.
+### 1. **Sovereign Citizen Registration**
+- **Blockchain Anchoring:** Citizens anchor a cryptographic hash of their Government ID (Legal Name + ID Number) to the Stellar blockchain.
+- **Privacy-First:** The raw ID data never leaves the citizen's device. Only a one-way fingerprint (SHA-256) is recorded on-chain.
+- **Verification Tiers:** Profiles are marked as "Verified" only after a Government Authority (Contract Admin) validates the anchored hash.
 
-### 2. **Survey Dashboard**
-- A centralized hub to discover and participate in multiple active surveys.
-- Covers diverse topics from corporate feedback to decentralized governance voting.
-- Tracks and displays the user's "Verified Human" status.
+### 2. **Digital Citizen ID Card**
+- A secure dashboard displaying the citizen's decentralized identity status.
+- **Reputation (XP):** Citizens earn reputation points for active participation in public consultations, building their "Civic Engagement" score.
 
-### 3. **Privacy-First Architecture**
-- **Client-Side Encryption:** All survey responses are encrypted using AES-256 in the browser before submission.
-- **On-Chain Proofs:** Only the cryptographic hash of the encrypted data is stored on the Soroban blockchain.
-- **No PII On-Chain:** Personally Identifiable Information (PII) never touches the ledger, ensuring compliance and security.
+### 3. **Public Consultations & Referendums**
+- Organizations and Government branches can host official surveys and referendums.
+- **Access Control:** Consultations can require a minimum reputation score, ensuring high-quality feedback from experienced citizens.
+- **Anti-Fraud:** The smart contract prevents double-voting and ensures only verified citizens can participate.
 
-### 4. **Soroban Smart Contract Integrity**
-- Prevents double-submissions for the same survey.
-- Verifies the issuer's signature to confirm the respondent's humanity.
-- Provides a permanent, timestamped record of the survey's validity.
+### 4. **Privacy-Preserving Referendums**
+- All consultation responses are encrypted using **AES-256** client-side before submission.
+- Only the cryptographic commitment (hash) of the encrypted payload is stored on the ledger.
 
-## System Architecture
+## Technical Architecture
 
-1.  **Identity Verification:** The user uploads a Gov ID (processed locally). A trusted issuer provides a signature confirming the user is a unique human.
-2.  **Dashboard:** The user browses available surveys.
-3.  **Encrypted Submission:** Upon completion, the frontend encrypts the response, hashes the ciphertext, and submits the hash + humanity proof to the Soroban contract.
-4.  **Verification:** The smart contract validates the transaction, ensuring the user is verified and hasn't voted before.
-
-## Technical Requirements
-
-- **Soroban SDK:** For smart contract development.
-- **Rust:** The primary programming language for the contract.
-- **Node.js & npm:** For the React/TypeScript frontend.
-- **Freighter Wallet:** To sign transactions on the Stellar Testnet.
+- **Identity Layer:** Soroban persistent storage stores `CitizenProfile` (ID Hash, Verification Status, Reputation).
+- **Service Layer:** Soroban instance storage manages `SurveyInfo` and consultation metadata.
+- **Transaction Layer:** Stellar network provides the immutable, timestamped record of all civic activities.
 
 ## Getting Started
 
-### 1. Smart Contract
-Navigate to the contract directory to build and test:
+### Smart Contract (Gateway Logic)
 ```bash
 cd contracts/survey
-cargo test
-stellar contract build
+cargo test # Run full civic lifecycle tests
+stellar contract build # Build the WASM gateway
 ```
 
-### 2. Frontend
-Install dependencies and start the development server:
+### Frontend (Portal UI)
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-*Note: Ensure your Freighter wallet is set to the Stellar Testnet.*
-
-## Security & Compliance Strategy
-
-- **GDPR/CCPA Compliance:** The architecture inherently supports the "Right to Erasure." Since only hashes are on-chain, deleting the off-chain encrypted data or the decryption keys effectively "deletes" the personal information from the system.
-- **Decoupled Identity:** By using specialized Identity Providers (IdPs) for the Gov ID check, the dApp itself never needs to store or manage sensitive government documents.
 
 ---
 
-**Stellar VerifySurvey DApp** - Powering High-Integrity Research on the Blockchain.
+**Sovereign Government Gateway** - Empowering Citizens through Blockchain Transparency.
