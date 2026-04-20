@@ -42,6 +42,8 @@ cd contracts/survey
 cargo test # Run full civic lifecycle tests
 stellar contract build # Build the WASM gateway
 ```
+### ID Smart Contract
+CDX7DN25SBNLR4JPP7WFRQPNEVFN3A3HLXNV6JFDDL47XMKTZ5PERQXK
 
 ### Frontend (Portal UI)
 ```bash
