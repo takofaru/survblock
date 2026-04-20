@@ -1,4 +1,4 @@
-# surblock
+# survblock
 
 **survblock** - Secure, Private, and Verified Human Feedback.
 
